@@ -49,6 +49,8 @@ sudo apt update
 sudo apt install -y python3 python3-yaml
 ```
 
+如果 `docker --version` 正常，但 `docker compose version` 报 `unknown command`，说明宿主机缺少 Compose v2 插件。先把插件补上，再继续部署。
+
 ## 首次渲染
 
 本仓库把 `docker-compose.yml` 和 `Caddyfile` 当作生成物维护。修改 `inventory/users.yaml` 后，重新渲染一次：
@@ -83,6 +85,14 @@ cp .env.example .env
 - `HOST_ADMIN_AUTHORIZED_KEYS_FILE`
 - 如果本机已有 `80/443` 占用，临时改 `CADDY_HTTP_PORT` / `CADDY_HTTPS_PORT` 做本地验证
 
+`HOST_ADMIN_AUTHORIZED_KEYS_FILE` 必须指向一个“公钥列表”文件，也就是未来允许登录 `zhoucanyu` 的 `authorized_keys` 内容来源。它不是自动复用当前登录用户家目录里的 `~/.ssh/authorized_keys`。
+
+如果你当前登录的服务器账号本地并没有这个文件，做法是：
+
+1. 在你自己的管理电脑上找到要登录服务器用的公钥，例如 `~/.ssh/id_ed25519.pub`
+2. 把这把公钥内容复制到服务器
+3. 在服务器上写成一个文件，例如 `/root/authorized_keys_zhoucanyu`
+
 ### 2. 初始化宿主机
 
 ```bash
@@ -95,8 +105,11 @@ sudo bash scripts/init_host.sh
 - 创建每个工作区和 code-server 配置目录
 - 创建或修正宿主机用户 `zhoucanyu`
 - 加入 `sudo`
+- 写入无密码 `sudo` 规则
 - 安装 `authorized_keys`
 - 禁用 SSH 密码登录和 root 直登
+
+执行前请保留当前管理会话，不要先退出。跑完后先新开一个终端测试 `zhoucanyu` 的 SSH key 登录，再关闭旧会话。
 
 ### 3. 启动平台
 

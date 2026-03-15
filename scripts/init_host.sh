@@ -84,6 +84,10 @@ if getent group docker >/dev/null 2>&1; then
 fi
 passwd -l "${HOST_ADMIN_USERNAME}" >/dev/null 2>&1 || true
 
+install -d -m 0750 /etc/sudoers.d
+printf '%s ALL=(ALL:ALL) NOPASSWD:ALL\n' "${HOST_ADMIN_USERNAME}" > "/etc/sudoers.d/90-${HOST_ADMIN_USERNAME}"
+chmod 0440 "/etc/sudoers.d/90-${HOST_ADMIN_USERNAME}"
+
 install -d -m 0700 "/home/${HOST_ADMIN_USERNAME}/.ssh"
 install -m 0600 "${HOST_ADMIN_AUTHORIZED_KEYS_FILE}" "/home/${HOST_ADMIN_USERNAME}/.ssh/authorized_keys"
 chown -R "${HOST_ADMIN_USERNAME}:${HOST_ADMIN_USERNAME}" "/home/${HOST_ADMIN_USERNAME}/.ssh"
@@ -115,3 +119,4 @@ fi
 echo "Host initialization complete."
 echo "Host admin: ${HOST_ADMIN_USERNAME}"
 echo "Data root: ${DATA_ROOT}"
+echo "Sudo mode: passwordless sudo enabled for ${HOST_ADMIN_USERNAME}"
