@@ -1,5 +1,3 @@
-name: ${COMPOSE_PROJECT_NAME:-110devspace}
-
 services:
   postgres:
     image: ${POSTGRES_IMAGE:-postgres:16}
