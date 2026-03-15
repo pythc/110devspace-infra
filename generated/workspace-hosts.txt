@@ -1,0 +1,22 @@
+# username workspace_host
+zhoucanyu ide-zhoucanyu.110devspace.internal
+lijiachen ide-lijiachen.110devspace.internal
+xiaomingjun ide-xiaomingjun.110devspace.internal
+liaozhikai ide-liaozhikai.110devspace.internal
+baiyang ide-baiyang.110devspace.internal
+zhourongkang ide-zhourongkang.110devspace.internal
+lichangjun ide-lichangjun.110devspace.internal
+zhaoyicheng ide-zhaoyicheng.110devspace.internal
+dengchongchen ide-dengchongchen.110devspace.internal
+hehuaifeng ide-hehuaifeng.110devspace.internal
+zhangtianqi ide-zhangtianqi.110devspace.internal
+chenyaoyang ide-chenyaoyang.110devspace.internal
+zhaoyiran ide-zhaoyiran.110devspace.internal
+chenhuifeng ide-chenhuifeng.110devspace.internal
+lingcheng ide-lingcheng.110devspace.internal
+zhaoqihang ide-zhaoqihang.110devspace.internal
+liuweixuan ide-liuweixuan.110devspace.internal
+zhouxiangjiang ide-zhouxiangjiang.110devspace.internal
+liuli ide-liuli.110devspace.internal
+leizhenxin ide-leizhenxin.110devspace.internal
+xieborui ide-xieborui.110devspace.internal

@@ -1,0 +1,131 @@
+https://git.110devspace.internal {
+  tls internal
+  encode zstd gzip
+  reverse_proxy gitea:3000
+}
+
+https://ide-zhoucanyu.110devspace.internal {
+  tls internal
+  encode zstd gzip
+  reverse_proxy code-server-zhoucanyu:8080
+}
+
+https://ide-lijiachen.110devspace.internal {
+  tls internal
+  encode zstd gzip
+  reverse_proxy code-server-lijiachen:8080
+}
+
+https://ide-xiaomingjun.110devspace.internal {
+  tls internal
+  encode zstd gzip
+  reverse_proxy code-server-xiaomingjun:8080
+}
+
+https://ide-liaozhikai.110devspace.internal {
+  tls internal
+  encode zstd gzip
+  reverse_proxy code-server-liaozhikai:8080
+}
+
+https://ide-baiyang.110devspace.internal {
+  tls internal
+  encode zstd gzip
+  reverse_proxy code-server-baiyang:8080
+}
+
+https://ide-zhourongkang.110devspace.internal {
+  tls internal
+  encode zstd gzip
+  reverse_proxy code-server-zhourongkang:8080
+}
+
+https://ide-lichangjun.110devspace.internal {
+  tls internal
+  encode zstd gzip
+  reverse_proxy code-server-lichangjun:8080
+}
+
+https://ide-zhaoyicheng.110devspace.internal {
+  tls internal
+  encode zstd gzip
+  reverse_proxy code-server-zhaoyicheng:8080
+}
+
+https://ide-dengchongchen.110devspace.internal {
+  tls internal
+  encode zstd gzip
+  reverse_proxy code-server-dengchongchen:8080
+}
+
+https://ide-hehuaifeng.110devspace.internal {
+  tls internal
+  encode zstd gzip
+  reverse_proxy code-server-hehuaifeng:8080
+}
+
+https://ide-zhangtianqi.110devspace.internal {
+  tls internal
+  encode zstd gzip
+  reverse_proxy code-server-zhangtianqi:8080
+}
+
+https://ide-chenyaoyang.110devspace.internal {
+  tls internal
+  encode zstd gzip
+  reverse_proxy code-server-chenyaoyang:8080
+}
+
+https://ide-zhaoyiran.110devspace.internal {
+  tls internal
+  encode zstd gzip
+  reverse_proxy code-server-zhaoyiran:8080
+}
+
+https://ide-chenhuifeng.110devspace.internal {
+  tls internal
+  encode zstd gzip
+  reverse_proxy code-server-chenhuifeng:8080
+}
+
+https://ide-lingcheng.110devspace.internal {
+  tls internal
+  encode zstd gzip
+  reverse_proxy code-server-lingcheng:8080
+}
+
+https://ide-zhaoqihang.110devspace.internal {
+  tls internal
+  encode zstd gzip
+  reverse_proxy code-server-zhaoqihang:8080
+}
+
+https://ide-liuweixuan.110devspace.internal {
+  tls internal
+  encode zstd gzip
+  reverse_proxy code-server-liuweixuan:8080
+}
+
+https://ide-zhouxiangjiang.110devspace.internal {
+  tls internal
+  encode zstd gzip
+  reverse_proxy code-server-zhouxiangjiang:8080
+}
+
+https://ide-liuli.110devspace.internal {
+  tls internal
+  encode zstd gzip
+  reverse_proxy code-server-liuli:8080
+}
+
+https://ide-leizhenxin.110devspace.internal {
+  tls internal
+  encode zstd gzip
+  reverse_proxy code-server-leizhenxin:8080
+}
+
+https://ide-xieborui.110devspace.internal {
+  tls internal
+  encode zstd gzip
+  reverse_proxy code-server-xieborui:8080
+}

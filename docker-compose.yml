@@ -1,0 +1,922 @@
+name: ${COMPOSE_PROJECT_NAME:-110devspace}
+
+services:
+  postgres:
+    image: ${POSTGRES_IMAGE:-postgres:16}
+    restart: unless-stopped
+    environment:
+      TZ: ${PLATFORM_TIMEZONE:-Asia/Shanghai}
+      POSTGRES_DB: ${POSTGRES_DB:-gitea}
+      POSTGRES_USER: ${POSTGRES_USER:-gitea}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-gitea} -d ${POSTGRES_DB:-gitea}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - ${DATA_ROOT:-/srv/110devspace}/postgres:/var/lib/postgresql/data
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+  gitea:
+    image: ${GITEA_IMAGE:-docker.gitea.com/gitea:1.25.4-rootless}
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      TZ: ${PLATFORM_TIMEZONE:-Asia/Shanghai}
+      USER_UID: ${APP_UID:-1000}
+      USER_GID: ${APP_GID:-1000}
+      GITEA__database__DB_TYPE: postgres
+      GITEA__database__HOST: postgres:5432
+      GITEA__database__NAME: ${POSTGRES_DB:-gitea}
+      GITEA__database__USER: ${POSTGRES_USER:-gitea}
+      GITEA__database__PASSWD: ${POSTGRES_PASSWORD}
+      GITEA__database__SSL_MODE: disable
+      GITEA__server__DOMAIN: ${GITEA_HOST:-git.110devspace.internal}
+      GITEA__server__ROOT_URL: https://${GITEA_HOST:-git.110devspace.internal}/
+      GITEA__server__HTTP_PORT: 3000
+      GITEA__server__SSH_DOMAIN: ${GITEA_HOST:-git.110devspace.internal}
+      GITEA__server__SSH_PORT: ${GITEA_SSH_PORT:-2222}
+      GITEA__server__SSH_LISTEN_PORT: ${GITEA_INTERNAL_SSH_PORT:-2222}
+      GITEA__server__START_SSH_SERVER: "true"
+      GITEA__security__INSTALL_LOCK: "true"
+      GITEA__service__DISABLE_REGISTRATION: "true"
+      GITEA__service__REQUIRE_SIGNIN_VIEW: "true"
+      GITEA__service__REGISTER_EMAIL_CONFIRM: "false"
+      GITEA__service__ENABLE_NOTIFY_MAIL: "false"
+      GITEA__picture__DISABLE_GRAVATAR: "true"
+      GITEA__mailer__ENABLED: "false"
+      GITEA__session__COOKIE_SECURE: "true"
+      GITEA__log__MODE: console
+    ports:
+      - "${GITEA_SSH_PORT:-2222}:${GITEA_INTERNAL_SSH_PORT:-2222}"
+    volumes:
+      - ${DATA_ROOT:-/srv/110devspace}/gitea:/var/lib/gitea
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+  code-server-zhoucanyu:
+    image: ${CODE_SERVER_IMAGE:-ghcr.io/coder/code-server:4.107.1-39}
+    restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    working_dir: /home/coder/workspace
+    environment:
+      TZ: ${PLATFORM_TIMEZONE:-Asia/Shanghai}
+      USER: coder
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - |-
+        CONFIG_DIR="/home/coder/.config/code-server"
+        CONFIG_FILE="$$CONFIG_DIR/config.yaml"
+        mkdir -p "$$CONFIG_DIR"
+        if [ ! -f "$$CONFIG_FILE" ]; then
+          cat > "$$CONFIG_FILE" <<EOF
+        bind-addr: 0.0.0.0:8080
+        auth: password
+        password: ${CODE_SERVER_INITIAL_PASSWORD}
+        cert: false
+        EOF
+        fi
+        exec code-server --config "$$CONFIG_FILE" /home/coder/workspace
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cpus: "1.0"
+    mem_limit: "1536m"
+    mem_reservation: "512m"
+    pids_limit: 256
+    volumes:
+      - ${DATA_ROOT:-/srv/110devspace}/workspaces/zhoucanyu:/home/coder/workspace
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/zhoucanyu/config:/home/coder/.config/code-server
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/zhoucanyu/local:/home/coder/.local/share/code-server
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+  code-server-lijiachen:
+    image: ${CODE_SERVER_IMAGE:-ghcr.io/coder/code-server:4.107.1-39}
+    restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    working_dir: /home/coder/workspace
+    environment:
+      TZ: ${PLATFORM_TIMEZONE:-Asia/Shanghai}
+      USER: coder
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - |-
+        CONFIG_DIR="/home/coder/.config/code-server"
+        CONFIG_FILE="$$CONFIG_DIR/config.yaml"
+        mkdir -p "$$CONFIG_DIR"
+        if [ ! -f "$$CONFIG_FILE" ]; then
+          cat > "$$CONFIG_FILE" <<EOF
+        bind-addr: 0.0.0.0:8080
+        auth: password
+        password: ${CODE_SERVER_INITIAL_PASSWORD}
+        cert: false
+        EOF
+        fi
+        exec code-server --config "$$CONFIG_FILE" /home/coder/workspace
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cpus: "1.0"
+    mem_limit: "1536m"
+    mem_reservation: "512m"
+    pids_limit: 256
+    volumes:
+      - ${DATA_ROOT:-/srv/110devspace}/workspaces/lijiachen:/home/coder/workspace
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/lijiachen/config:/home/coder/.config/code-server
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/lijiachen/local:/home/coder/.local/share/code-server
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+  code-server-xiaomingjun:
+    image: ${CODE_SERVER_IMAGE:-ghcr.io/coder/code-server:4.107.1-39}
+    restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    working_dir: /home/coder/workspace
+    environment:
+      TZ: ${PLATFORM_TIMEZONE:-Asia/Shanghai}
+      USER: coder
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - |-
+        CONFIG_DIR="/home/coder/.config/code-server"
+        CONFIG_FILE="$$CONFIG_DIR/config.yaml"
+        mkdir -p "$$CONFIG_DIR"
+        if [ ! -f "$$CONFIG_FILE" ]; then
+          cat > "$$CONFIG_FILE" <<EOF
+        bind-addr: 0.0.0.0:8080
+        auth: password
+        password: ${CODE_SERVER_INITIAL_PASSWORD}
+        cert: false
+        EOF
+        fi
+        exec code-server --config "$$CONFIG_FILE" /home/coder/workspace
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cpus: "1.0"
+    mem_limit: "1536m"
+    mem_reservation: "512m"
+    pids_limit: 256
+    volumes:
+      - ${DATA_ROOT:-/srv/110devspace}/workspaces/xiaomingjun:/home/coder/workspace
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/xiaomingjun/config:/home/coder/.config/code-server
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/xiaomingjun/local:/home/coder/.local/share/code-server
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+  code-server-liaozhikai:
+    image: ${CODE_SERVER_IMAGE:-ghcr.io/coder/code-server:4.107.1-39}
+    restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    working_dir: /home/coder/workspace
+    environment:
+      TZ: ${PLATFORM_TIMEZONE:-Asia/Shanghai}
+      USER: coder
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - |-
+        CONFIG_DIR="/home/coder/.config/code-server"
+        CONFIG_FILE="$$CONFIG_DIR/config.yaml"
+        mkdir -p "$$CONFIG_DIR"
+        if [ ! -f "$$CONFIG_FILE" ]; then
+          cat > "$$CONFIG_FILE" <<EOF
+        bind-addr: 0.0.0.0:8080
+        auth: password
+        password: ${CODE_SERVER_INITIAL_PASSWORD}
+        cert: false
+        EOF
+        fi
+        exec code-server --config "$$CONFIG_FILE" /home/coder/workspace
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cpus: "1.0"
+    mem_limit: "1536m"
+    mem_reservation: "512m"
+    pids_limit: 256
+    volumes:
+      - ${DATA_ROOT:-/srv/110devspace}/workspaces/liaozhikai:/home/coder/workspace
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/liaozhikai/config:/home/coder/.config/code-server
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/liaozhikai/local:/home/coder/.local/share/code-server
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+  code-server-baiyang:
+    image: ${CODE_SERVER_IMAGE:-ghcr.io/coder/code-server:4.107.1-39}
+    restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    working_dir: /home/coder/workspace
+    environment:
+      TZ: ${PLATFORM_TIMEZONE:-Asia/Shanghai}
+      USER: coder
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - |-
+        CONFIG_DIR="/home/coder/.config/code-server"
+        CONFIG_FILE="$$CONFIG_DIR/config.yaml"
+        mkdir -p "$$CONFIG_DIR"
+        if [ ! -f "$$CONFIG_FILE" ]; then
+          cat > "$$CONFIG_FILE" <<EOF
+        bind-addr: 0.0.0.0:8080
+        auth: password
+        password: ${CODE_SERVER_INITIAL_PASSWORD}
+        cert: false
+        EOF
+        fi
+        exec code-server --config "$$CONFIG_FILE" /home/coder/workspace
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cpus: "1.0"
+    mem_limit: "1536m"
+    mem_reservation: "512m"
+    pids_limit: 256
+    volumes:
+      - ${DATA_ROOT:-/srv/110devspace}/workspaces/baiyang:/home/coder/workspace
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/baiyang/config:/home/coder/.config/code-server
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/baiyang/local:/home/coder/.local/share/code-server
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+  code-server-zhourongkang:
+    image: ${CODE_SERVER_IMAGE:-ghcr.io/coder/code-server:4.107.1-39}
+    restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    working_dir: /home/coder/workspace
+    environment:
+      TZ: ${PLATFORM_TIMEZONE:-Asia/Shanghai}
+      USER: coder
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - |-
+        CONFIG_DIR="/home/coder/.config/code-server"
+        CONFIG_FILE="$$CONFIG_DIR/config.yaml"
+        mkdir -p "$$CONFIG_DIR"
+        if [ ! -f "$$CONFIG_FILE" ]; then
+          cat > "$$CONFIG_FILE" <<EOF
+        bind-addr: 0.0.0.0:8080
+        auth: password
+        password: ${CODE_SERVER_INITIAL_PASSWORD}
+        cert: false
+        EOF
+        fi
+        exec code-server --config "$$CONFIG_FILE" /home/coder/workspace
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cpus: "1.0"
+    mem_limit: "1536m"
+    mem_reservation: "512m"
+    pids_limit: 256
+    volumes:
+      - ${DATA_ROOT:-/srv/110devspace}/workspaces/zhourongkang:/home/coder/workspace
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/zhourongkang/config:/home/coder/.config/code-server
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/zhourongkang/local:/home/coder/.local/share/code-server
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+  code-server-lichangjun:
+    image: ${CODE_SERVER_IMAGE:-ghcr.io/coder/code-server:4.107.1-39}
+    restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    working_dir: /home/coder/workspace
+    environment:
+      TZ: ${PLATFORM_TIMEZONE:-Asia/Shanghai}
+      USER: coder
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - |-
+        CONFIG_DIR="/home/coder/.config/code-server"
+        CONFIG_FILE="$$CONFIG_DIR/config.yaml"
+        mkdir -p "$$CONFIG_DIR"
+        if [ ! -f "$$CONFIG_FILE" ]; then
+          cat > "$$CONFIG_FILE" <<EOF
+        bind-addr: 0.0.0.0:8080
+        auth: password
+        password: ${CODE_SERVER_INITIAL_PASSWORD}
+        cert: false
+        EOF
+        fi
+        exec code-server --config "$$CONFIG_FILE" /home/coder/workspace
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cpus: "1.0"
+    mem_limit: "1536m"
+    mem_reservation: "512m"
+    pids_limit: 256
+    volumes:
+      - ${DATA_ROOT:-/srv/110devspace}/workspaces/lichangjun:/home/coder/workspace
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/lichangjun/config:/home/coder/.config/code-server
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/lichangjun/local:/home/coder/.local/share/code-server
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+  code-server-zhaoyicheng:
+    image: ${CODE_SERVER_IMAGE:-ghcr.io/coder/code-server:4.107.1-39}
+    restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    working_dir: /home/coder/workspace
+    environment:
+      TZ: ${PLATFORM_TIMEZONE:-Asia/Shanghai}
+      USER: coder
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - |-
+        CONFIG_DIR="/home/coder/.config/code-server"
+        CONFIG_FILE="$$CONFIG_DIR/config.yaml"
+        mkdir -p "$$CONFIG_DIR"
+        if [ ! -f "$$CONFIG_FILE" ]; then
+          cat > "$$CONFIG_FILE" <<EOF
+        bind-addr: 0.0.0.0:8080
+        auth: password
+        password: ${CODE_SERVER_INITIAL_PASSWORD}
+        cert: false
+        EOF
+        fi
+        exec code-server --config "$$CONFIG_FILE" /home/coder/workspace
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cpus: "1.0"
+    mem_limit: "1536m"
+    mem_reservation: "512m"
+    pids_limit: 256
+    volumes:
+      - ${DATA_ROOT:-/srv/110devspace}/workspaces/zhaoyicheng:/home/coder/workspace
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/zhaoyicheng/config:/home/coder/.config/code-server
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/zhaoyicheng/local:/home/coder/.local/share/code-server
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+  code-server-dengchongchen:
+    image: ${CODE_SERVER_IMAGE:-ghcr.io/coder/code-server:4.107.1-39}
+    restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    working_dir: /home/coder/workspace
+    environment:
+      TZ: ${PLATFORM_TIMEZONE:-Asia/Shanghai}
+      USER: coder
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - |-
+        CONFIG_DIR="/home/coder/.config/code-server"
+        CONFIG_FILE="$$CONFIG_DIR/config.yaml"
+        mkdir -p "$$CONFIG_DIR"
+        if [ ! -f "$$CONFIG_FILE" ]; then
+          cat > "$$CONFIG_FILE" <<EOF
+        bind-addr: 0.0.0.0:8080
+        auth: password
+        password: ${CODE_SERVER_INITIAL_PASSWORD}
+        cert: false
+        EOF
+        fi
+        exec code-server --config "$$CONFIG_FILE" /home/coder/workspace
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cpus: "1.0"
+    mem_limit: "1536m"
+    mem_reservation: "512m"
+    pids_limit: 256
+    volumes:
+      - ${DATA_ROOT:-/srv/110devspace}/workspaces/dengchongchen:/home/coder/workspace
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/dengchongchen/config:/home/coder/.config/code-server
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/dengchongchen/local:/home/coder/.local/share/code-server
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+  code-server-hehuaifeng:
+    image: ${CODE_SERVER_IMAGE:-ghcr.io/coder/code-server:4.107.1-39}
+    restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    working_dir: /home/coder/workspace
+    environment:
+      TZ: ${PLATFORM_TIMEZONE:-Asia/Shanghai}
+      USER: coder
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - |-
+        CONFIG_DIR="/home/coder/.config/code-server"
+        CONFIG_FILE="$$CONFIG_DIR/config.yaml"
+        mkdir -p "$$CONFIG_DIR"
+        if [ ! -f "$$CONFIG_FILE" ]; then
+          cat > "$$CONFIG_FILE" <<EOF
+        bind-addr: 0.0.0.0:8080
+        auth: password
+        password: ${CODE_SERVER_INITIAL_PASSWORD}
+        cert: false
+        EOF
+        fi
+        exec code-server --config "$$CONFIG_FILE" /home/coder/workspace
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cpus: "1.0"
+    mem_limit: "1536m"
+    mem_reservation: "512m"
+    pids_limit: 256
+    volumes:
+      - ${DATA_ROOT:-/srv/110devspace}/workspaces/hehuaifeng:/home/coder/workspace
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/hehuaifeng/config:/home/coder/.config/code-server
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/hehuaifeng/local:/home/coder/.local/share/code-server
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+  code-server-zhangtianqi:
+    image: ${CODE_SERVER_IMAGE:-ghcr.io/coder/code-server:4.107.1-39}
+    restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    working_dir: /home/coder/workspace
+    environment:
+      TZ: ${PLATFORM_TIMEZONE:-Asia/Shanghai}
+      USER: coder
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - |-
+        CONFIG_DIR="/home/coder/.config/code-server"
+        CONFIG_FILE="$$CONFIG_DIR/config.yaml"
+        mkdir -p "$$CONFIG_DIR"
+        if [ ! -f "$$CONFIG_FILE" ]; then
+          cat > "$$CONFIG_FILE" <<EOF
+        bind-addr: 0.0.0.0:8080
+        auth: password
+        password: ${CODE_SERVER_INITIAL_PASSWORD}
+        cert: false
+        EOF
+        fi
+        exec code-server --config "$$CONFIG_FILE" /home/coder/workspace
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cpus: "1.0"
+    mem_limit: "1536m"
+    mem_reservation: "512m"
+    pids_limit: 256
+    volumes:
+      - ${DATA_ROOT:-/srv/110devspace}/workspaces/zhangtianqi:/home/coder/workspace
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/zhangtianqi/config:/home/coder/.config/code-server
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/zhangtianqi/local:/home/coder/.local/share/code-server
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+  code-server-chenyaoyang:
+    image: ${CODE_SERVER_IMAGE:-ghcr.io/coder/code-server:4.107.1-39}
+    restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    working_dir: /home/coder/workspace
+    environment:
+      TZ: ${PLATFORM_TIMEZONE:-Asia/Shanghai}
+      USER: coder
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - |-
+        CONFIG_DIR="/home/coder/.config/code-server"
+        CONFIG_FILE="$$CONFIG_DIR/config.yaml"
+        mkdir -p "$$CONFIG_DIR"
+        if [ ! -f "$$CONFIG_FILE" ]; then
+          cat > "$$CONFIG_FILE" <<EOF
+        bind-addr: 0.0.0.0:8080
+        auth: password
+        password: ${CODE_SERVER_INITIAL_PASSWORD}
+        cert: false
+        EOF
+        fi
+        exec code-server --config "$$CONFIG_FILE" /home/coder/workspace
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cpus: "1.0"
+    mem_limit: "1536m"
+    mem_reservation: "512m"
+    pids_limit: 256
+    volumes:
+      - ${DATA_ROOT:-/srv/110devspace}/workspaces/chenyaoyang:/home/coder/workspace
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/chenyaoyang/config:/home/coder/.config/code-server
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/chenyaoyang/local:/home/coder/.local/share/code-server
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+  code-server-zhaoyiran:
+    image: ${CODE_SERVER_IMAGE:-ghcr.io/coder/code-server:4.107.1-39}
+    restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    working_dir: /home/coder/workspace
+    environment:
+      TZ: ${PLATFORM_TIMEZONE:-Asia/Shanghai}
+      USER: coder
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - |-
+        CONFIG_DIR="/home/coder/.config/code-server"
+        CONFIG_FILE="$$CONFIG_DIR/config.yaml"
+        mkdir -p "$$CONFIG_DIR"
+        if [ ! -f "$$CONFIG_FILE" ]; then
+          cat > "$$CONFIG_FILE" <<EOF
+        bind-addr: 0.0.0.0:8080
+        auth: password
+        password: ${CODE_SERVER_INITIAL_PASSWORD}
+        cert: false
+        EOF
+        fi
+        exec code-server --config "$$CONFIG_FILE" /home/coder/workspace
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cpus: "1.0"
+    mem_limit: "1536m"
+    mem_reservation: "512m"
+    pids_limit: 256
+    volumes:
+      - ${DATA_ROOT:-/srv/110devspace}/workspaces/zhaoyiran:/home/coder/workspace
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/zhaoyiran/config:/home/coder/.config/code-server
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/zhaoyiran/local:/home/coder/.local/share/code-server
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+  code-server-chenhuifeng:
+    image: ${CODE_SERVER_IMAGE:-ghcr.io/coder/code-server:4.107.1-39}
+    restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    working_dir: /home/coder/workspace
+    environment:
+      TZ: ${PLATFORM_TIMEZONE:-Asia/Shanghai}
+      USER: coder
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - |-
+        CONFIG_DIR="/home/coder/.config/code-server"
+        CONFIG_FILE="$$CONFIG_DIR/config.yaml"
+        mkdir -p "$$CONFIG_DIR"
+        if [ ! -f "$$CONFIG_FILE" ]; then
+          cat > "$$CONFIG_FILE" <<EOF
+        bind-addr: 0.0.0.0:8080
+        auth: password
+        password: ${CODE_SERVER_INITIAL_PASSWORD}
+        cert: false
+        EOF
+        fi
+        exec code-server --config "$$CONFIG_FILE" /home/coder/workspace
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cpus: "1.0"
+    mem_limit: "1536m"
+    mem_reservation: "512m"
+    pids_limit: 256
+    volumes:
+      - ${DATA_ROOT:-/srv/110devspace}/workspaces/chenhuifeng:/home/coder/workspace
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/chenhuifeng/config:/home/coder/.config/code-server
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/chenhuifeng/local:/home/coder/.local/share/code-server
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+  code-server-lingcheng:
+    image: ${CODE_SERVER_IMAGE:-ghcr.io/coder/code-server:4.107.1-39}
+    restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    working_dir: /home/coder/workspace
+    environment:
+      TZ: ${PLATFORM_TIMEZONE:-Asia/Shanghai}
+      USER: coder
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - |-
+        CONFIG_DIR="/home/coder/.config/code-server"
+        CONFIG_FILE="$$CONFIG_DIR/config.yaml"
+        mkdir -p "$$CONFIG_DIR"
+        if [ ! -f "$$CONFIG_FILE" ]; then
+          cat > "$$CONFIG_FILE" <<EOF
+        bind-addr: 0.0.0.0:8080
+        auth: password
+        password: ${CODE_SERVER_INITIAL_PASSWORD}
+        cert: false
+        EOF
+        fi
+        exec code-server --config "$$CONFIG_FILE" /home/coder/workspace
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cpus: "1.0"
+    mem_limit: "1536m"
+    mem_reservation: "512m"
+    pids_limit: 256
+    volumes:
+      - ${DATA_ROOT:-/srv/110devspace}/workspaces/lingcheng:/home/coder/workspace
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/lingcheng/config:/home/coder/.config/code-server
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/lingcheng/local:/home/coder/.local/share/code-server
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+  code-server-zhaoqihang:
+    image: ${CODE_SERVER_IMAGE:-ghcr.io/coder/code-server:4.107.1-39}
+    restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    working_dir: /home/coder/workspace
+    environment:
+      TZ: ${PLATFORM_TIMEZONE:-Asia/Shanghai}
+      USER: coder
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - |-
+        CONFIG_DIR="/home/coder/.config/code-server"
+        CONFIG_FILE="$$CONFIG_DIR/config.yaml"
+        mkdir -p "$$CONFIG_DIR"
+        if [ ! -f "$$CONFIG_FILE" ]; then
+          cat > "$$CONFIG_FILE" <<EOF
+        bind-addr: 0.0.0.0:8080
+        auth: password
+        password: ${CODE_SERVER_INITIAL_PASSWORD}
+        cert: false
+        EOF
+        fi
+        exec code-server --config "$$CONFIG_FILE" /home/coder/workspace
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cpus: "1.0"
+    mem_limit: "1536m"
+    mem_reservation: "512m"
+    pids_limit: 256
+    volumes:
+      - ${DATA_ROOT:-/srv/110devspace}/workspaces/zhaoqihang:/home/coder/workspace
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/zhaoqihang/config:/home/coder/.config/code-server
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/zhaoqihang/local:/home/coder/.local/share/code-server
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+  code-server-liuweixuan:
+    image: ${CODE_SERVER_IMAGE:-ghcr.io/coder/code-server:4.107.1-39}
+    restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    working_dir: /home/coder/workspace
+    environment:
+      TZ: ${PLATFORM_TIMEZONE:-Asia/Shanghai}
+      USER: coder
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - |-
+        CONFIG_DIR="/home/coder/.config/code-server"
+        CONFIG_FILE="$$CONFIG_DIR/config.yaml"
+        mkdir -p "$$CONFIG_DIR"
+        if [ ! -f "$$CONFIG_FILE" ]; then
+          cat > "$$CONFIG_FILE" <<EOF
+        bind-addr: 0.0.0.0:8080
+        auth: password
+        password: ${CODE_SERVER_INITIAL_PASSWORD}
+        cert: false
+        EOF
+        fi
+        exec code-server --config "$$CONFIG_FILE" /home/coder/workspace
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cpus: "1.0"
+    mem_limit: "1536m"
+    mem_reservation: "512m"
+    pids_limit: 256
+    volumes:
+      - ${DATA_ROOT:-/srv/110devspace}/workspaces/liuweixuan:/home/coder/workspace
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/liuweixuan/config:/home/coder/.config/code-server
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/liuweixuan/local:/home/coder/.local/share/code-server
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+  code-server-zhouxiangjiang:
+    image: ${CODE_SERVER_IMAGE:-ghcr.io/coder/code-server:4.107.1-39}
+    restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    working_dir: /home/coder/workspace
+    environment:
+      TZ: ${PLATFORM_TIMEZONE:-Asia/Shanghai}
+      USER: coder
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - |-
+        CONFIG_DIR="/home/coder/.config/code-server"
+        CONFIG_FILE="$$CONFIG_DIR/config.yaml"
+        mkdir -p "$$CONFIG_DIR"
+        if [ ! -f "$$CONFIG_FILE" ]; then
+          cat > "$$CONFIG_FILE" <<EOF
+        bind-addr: 0.0.0.0:8080
+        auth: password
+        password: ${CODE_SERVER_INITIAL_PASSWORD}
+        cert: false
+        EOF
+        fi
+        exec code-server --config "$$CONFIG_FILE" /home/coder/workspace
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cpus: "1.0"
+    mem_limit: "1536m"
+    mem_reservation: "512m"
+    pids_limit: 256
+    volumes:
+      - ${DATA_ROOT:-/srv/110devspace}/workspaces/zhouxiangjiang:/home/coder/workspace
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/zhouxiangjiang/config:/home/coder/.config/code-server
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/zhouxiangjiang/local:/home/coder/.local/share/code-server
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+  code-server-liuli:
+    image: ${CODE_SERVER_IMAGE:-ghcr.io/coder/code-server:4.107.1-39}
+    restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    working_dir: /home/coder/workspace
+    environment:
+      TZ: ${PLATFORM_TIMEZONE:-Asia/Shanghai}
+      USER: coder
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - |-
+        CONFIG_DIR="/home/coder/.config/code-server"
+        CONFIG_FILE="$$CONFIG_DIR/config.yaml"
+        mkdir -p "$$CONFIG_DIR"
+        if [ ! -f "$$CONFIG_FILE" ]; then
+          cat > "$$CONFIG_FILE" <<EOF
+        bind-addr: 0.0.0.0:8080
+        auth: password
+        password: ${CODE_SERVER_INITIAL_PASSWORD}
+        cert: false
+        EOF
+        fi
+        exec code-server --config "$$CONFIG_FILE" /home/coder/workspace
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cpus: "1.0"
+    mem_limit: "1536m"
+    mem_reservation: "512m"
+    pids_limit: 256
+    volumes:
+      - ${DATA_ROOT:-/srv/110devspace}/workspaces/liuli:/home/coder/workspace
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/liuli/config:/home/coder/.config/code-server
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/liuli/local:/home/coder/.local/share/code-server
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+  code-server-leizhenxin:
+    image: ${CODE_SERVER_IMAGE:-ghcr.io/coder/code-server:4.107.1-39}
+    restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    working_dir: /home/coder/workspace
+    environment:
+      TZ: ${PLATFORM_TIMEZONE:-Asia/Shanghai}
+      USER: coder
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - |-
+        CONFIG_DIR="/home/coder/.config/code-server"
+        CONFIG_FILE="$$CONFIG_DIR/config.yaml"
+        mkdir -p "$$CONFIG_DIR"
+        if [ ! -f "$$CONFIG_FILE" ]; then
+          cat > "$$CONFIG_FILE" <<EOF
+        bind-addr: 0.0.0.0:8080
+        auth: password
+        password: ${CODE_SERVER_INITIAL_PASSWORD}
+        cert: false
+        EOF
+        fi
+        exec code-server --config "$$CONFIG_FILE" /home/coder/workspace
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cpus: "1.0"
+    mem_limit: "1536m"
+    mem_reservation: "512m"
+    pids_limit: 256
+    volumes:
+      - ${DATA_ROOT:-/srv/110devspace}/workspaces/leizhenxin:/home/coder/workspace
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/leizhenxin/config:/home/coder/.config/code-server
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/leizhenxin/local:/home/coder/.local/share/code-server
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+  code-server-xieborui:
+    image: ${CODE_SERVER_IMAGE:-ghcr.io/coder/code-server:4.107.1-39}
+    restart: unless-stopped
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    working_dir: /home/coder/workspace
+    environment:
+      TZ: ${PLATFORM_TIMEZONE:-Asia/Shanghai}
+      USER: coder
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - |-
+        CONFIG_DIR="/home/coder/.config/code-server"
+        CONFIG_FILE="$$CONFIG_DIR/config.yaml"
+        mkdir -p "$$CONFIG_DIR"
+        if [ ! -f "$$CONFIG_FILE" ]; then
+          cat > "$$CONFIG_FILE" <<EOF
+        bind-addr: 0.0.0.0:8080
+        auth: password
+        password: ${CODE_SERVER_INITIAL_PASSWORD}
+        cert: false
+        EOF
+        fi
+        exec code-server --config "$$CONFIG_FILE" /home/coder/workspace
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cpus: "1.0"
+    mem_limit: "1536m"
+    mem_reservation: "512m"
+    pids_limit: 256
+    volumes:
+      - ${DATA_ROOT:-/srv/110devspace}/workspaces/xieborui:/home/coder/workspace
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/xieborui/config:/home/coder/.config/code-server
+      - ${DATA_ROOT:-/srv/110devspace}/code-server/xieborui/local:/home/coder/.local/share/code-server
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+  caddy:
+    image: ${CADDY_IMAGE:-caddy:2.10.2-alpine}
+    restart: unless-stopped
+    depends_on:
+      gitea:
+        condition: service_started
+    ports:
+      - "${CADDY_HTTP_PORT:-80}:80"
+      - "${CADDY_HTTPS_PORT:-443}:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ${DATA_ROOT:-/srv/110devspace}/caddy/data:/data
+      - ${DATA_ROOT:-/srv/110devspace}/caddy/config:/config
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - platform
+
+networks:
+  platform:
+    driver: bridge

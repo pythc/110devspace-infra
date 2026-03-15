@@ -1,0 +1,270 @@
+{
+  "platform": {
+    "name": "110devspace",
+    "ip_address": "10.16.6.247",
+    "base_domain": "110devspace.internal",
+    "timezone": "Asia/Shanghai",
+    "data_root": "/srv/110devspace",
+    "gitea_host": "git.110devspace.internal",
+    "gitea_ssh_port": 2222,
+    "workspace_subdomain_prefix": "ide-",
+    "workspace_defaults": {
+      "cpus": "1.0",
+      "memory": "1536m"
+    }
+  },
+  "users": [
+    {
+      "username": "zhoucanyu",
+      "full_name": "周灿宇",
+      "gitea_admin": true,
+      "host_admin": true,
+      "workspace": {
+        "cpus": "1.0",
+        "memory": "1536m"
+      },
+      "email": "zhoucanyu@110devspace.internal",
+      "workspace_host": "ide-zhoucanyu.110devspace.internal"
+    },
+    {
+      "username": "lijiachen",
+      "full_name": "李珈辰",
+      "gitea_admin": false,
+      "host_admin": false,
+      "workspace": {
+        "cpus": "1.0",
+        "memory": "1536m"
+      },
+      "email": "lijiachen@110devspace.internal",
+      "workspace_host": "ide-lijiachen.110devspace.internal"
+    },
+    {
+      "username": "xiaomingjun",
+      "full_name": "肖铭俊",
+      "gitea_admin": false,
+      "host_admin": false,
+      "workspace": {
+        "cpus": "1.0",
+        "memory": "1536m"
+      },
+      "email": "xiaomingjun@110devspace.internal",
+      "workspace_host": "ide-xiaomingjun.110devspace.internal"
+    },
+    {
+      "username": "liaozhikai",
+      "full_name": "廖治凯",
+      "gitea_admin": false,
+      "host_admin": false,
+      "workspace": {
+        "cpus": "1.0",
+        "memory": "1536m"
+      },
+      "email": "liaozhikai@110devspace.internal",
+      "workspace_host": "ide-liaozhikai.110devspace.internal"
+    },
+    {
+      "username": "baiyang",
+      "full_name": "白洋",
+      "gitea_admin": false,
+      "host_admin": false,
+      "workspace": {
+        "cpus": "1.0",
+        "memory": "1536m"
+      },
+      "email": "baiyang@110devspace.internal",
+      "workspace_host": "ide-baiyang.110devspace.internal"
+    },
+    {
+      "username": "zhourongkang",
+      "full_name": "周荣康",
+      "gitea_admin": false,
+      "host_admin": false,
+      "workspace": {
+        "cpus": "1.0",
+        "memory": "1536m"
+      },
+      "email": "zhourongkang@110devspace.internal",
+      "workspace_host": "ide-zhourongkang.110devspace.internal"
+    },
+    {
+      "username": "lichangjun",
+      "full_name": "李昌峻",
+      "gitea_admin": false,
+      "host_admin": false,
+      "workspace": {
+        "cpus": "1.0",
+        "memory": "1536m"
+      },
+      "email": "lichangjun@110devspace.internal",
+      "workspace_host": "ide-lichangjun.110devspace.internal"
+    },
+    {
+      "username": "zhaoyicheng",
+      "full_name": "赵奕程",
+      "gitea_admin": false,
+      "host_admin": false,
+      "workspace": {
+        "cpus": "1.0",
+        "memory": "1536m"
+      },
+      "email": "zhaoyicheng@110devspace.internal",
+      "workspace_host": "ide-zhaoyicheng.110devspace.internal"
+    },
+    {
+      "username": "dengchongchen",
+      "full_name": "邓翀宸",
+      "gitea_admin": false,
+      "host_admin": false,
+      "workspace": {
+        "cpus": "1.0",
+        "memory": "1536m"
+      },
+      "email": "dengchongchen@110devspace.internal",
+      "workspace_host": "ide-dengchongchen.110devspace.internal"
+    },
+    {
+      "username": "hehuaifeng",
+      "full_name": "何怀峰",
+      "gitea_admin": false,
+      "host_admin": false,
+      "workspace": {
+        "cpus": "1.0",
+        "memory": "1536m"
+      },
+      "email": "hehuaifeng@110devspace.internal",
+      "workspace_host": "ide-hehuaifeng.110devspace.internal"
+    },
+    {
+      "username": "zhangtianqi",
+      "full_name": "张天齐",
+      "gitea_admin": false,
+      "host_admin": false,
+      "workspace": {
+        "cpus": "1.0",
+        "memory": "1536m"
+      },
+      "email": "zhangtianqi@110devspace.internal",
+      "workspace_host": "ide-zhangtianqi.110devspace.internal"
+    },
+    {
+      "username": "chenyaoyang",
+      "full_name": "陈耀洋",
+      "gitea_admin": false,
+      "host_admin": false,
+      "workspace": {
+        "cpus": "1.0",
+        "memory": "1536m"
+      },
+      "email": "chenyaoyang@110devspace.internal",
+      "workspace_host": "ide-chenyaoyang.110devspace.internal"
+    },
+    {
+      "username": "zhaoyiran",
+      "full_name": "赵依然",
+      "gitea_admin": false,
+      "host_admin": false,
+      "workspace": {
+        "cpus": "1.0",
+        "memory": "1536m"
+      },
+      "email": "zhaoyiran@110devspace.internal",
+      "workspace_host": "ide-zhaoyiran.110devspace.internal"
+    },
+    {
+      "username": "chenhuifeng",
+      "full_name": "陈辉峰",
+      "gitea_admin": false,
+      "host_admin": false,
+      "workspace": {
+        "cpus": "1.0",
+        "memory": "1536m"
+      },
+      "email": "chenhuifeng@110devspace.internal",
+      "workspace_host": "ide-chenhuifeng.110devspace.internal"
+    },
+    {
+      "username": "lingcheng",
+      "full_name": "凌成",
+      "gitea_admin": false,
+      "host_admin": false,
+      "workspace": {
+        "cpus": "1.0",
+        "memory": "1536m"
+      },
+      "email": "lingcheng@110devspace.internal",
+      "workspace_host": "ide-lingcheng.110devspace.internal"
+    },
+    {
+      "username": "zhaoqihang",
+      "full_name": "赵启行",
+      "gitea_admin": false,
+      "host_admin": false,
+      "workspace": {
+        "cpus": "1.0",
+        "memory": "1536m"
+      },
+      "email": "zhaoqihang@110devspace.internal",
+      "workspace_host": "ide-zhaoqihang.110devspace.internal"
+    },
+    {
+      "username": "liuweixuan",
+      "full_name": "刘伟轩",
+      "gitea_admin": false,
+      "host_admin": false,
+      "workspace": {
+        "cpus": "1.0",
+        "memory": "1536m"
+      },
+      "email": "liuweixuan@110devspace.internal",
+      "workspace_host": "ide-liuweixuan.110devspace.internal"
+    },
+    {
+      "username": "zhouxiangjiang",
+      "full_name": "周湘江",
+      "gitea_admin": false,
+      "host_admin": false,
+      "workspace": {
+        "cpus": "1.0",
+        "memory": "1536m"
+      },
+      "email": "zhouxiangjiang@110devspace.internal",
+      "workspace_host": "ide-zhouxiangjiang.110devspace.internal"
+    },
+    {
+      "username": "liuli",
+      "full_name": "刘莉",
+      "gitea_admin": false,
+      "host_admin": false,
+      "workspace": {
+        "cpus": "1.0",
+        "memory": "1536m"
+      },
+      "email": "liuli@110devspace.internal",
+      "workspace_host": "ide-liuli.110devspace.internal"
+    },
+    {
+      "username": "leizhenxin",
+      "full_name": "雷真欣",
+      "gitea_admin": false,
+      "host_admin": false,
+      "workspace": {
+        "cpus": "1.0",
+        "memory": "1536m"
+      },
+      "email": "leizhenxin@110devspace.internal",
+      "workspace_host": "ide-leizhenxin.110devspace.internal"
+    },
+    {
+      "username": "xieborui",
+      "full_name": "谢博睿",
+      "gitea_admin": false,
+      "host_admin": false,
+      "workspace": {
+        "cpus": "1.0",
+        "memory": "1536m"
+      },
+      "email": "xieborui@110devspace.internal",
+      "workspace_host": "ide-xieborui.110devspace.internal"
+    }
+  ]
+}

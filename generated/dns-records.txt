@@ -1,0 +1,3 @@
+# Configure these records in internal DNS.
+git.110devspace.internal -> 10.16.6.247
+*.110devspace.internal -> 10.16.6.247

@@ -1,0 +1,99 @@
+platform:
+  name: 110devspace
+  ip_address: 10.16.6.247
+  base_domain: 110devspace.internal
+  timezone: Asia/Shanghai
+  data_root: /srv/110devspace
+  gitea_host: git.110devspace.internal
+  gitea_ssh_port: 2222
+  workspace_subdomain_prefix: ide-
+  workspace_defaults:
+    cpus: "1.0"
+    memory: 1536m
+
+users:
+  - username: zhoucanyu
+    full_name: 周灿宇
+    gitea_admin: true
+    host_admin: true
+  - username: lijiachen
+    full_name: 李珈辰
+    gitea_admin: false
+    host_admin: false
+  - username: xiaomingjun
+    full_name: 肖铭俊
+    gitea_admin: false
+    host_admin: false
+  - username: liaozhikai
+    full_name: 廖治凯
+    gitea_admin: false
+    host_admin: false
+  - username: baiyang
+    full_name: 白洋
+    gitea_admin: false
+    host_admin: false
+  - username: zhourongkang
+    full_name: 周荣康
+    gitea_admin: false
+    host_admin: false
+  - username: lichangjun
+    full_name: 李昌峻
+    gitea_admin: false
+    host_admin: false
+  - username: zhaoyicheng
+    full_name: 赵奕程
+    gitea_admin: false
+    host_admin: false
+  - username: dengchongchen
+    full_name: 邓翀宸
+    gitea_admin: false
+    host_admin: false
+  - username: hehuaifeng
+    full_name: 何怀峰
+    gitea_admin: false
+    host_admin: false
+  - username: zhangtianqi
+    full_name: 张天齐
+    gitea_admin: false
+    host_admin: false
+  - username: chenyaoyang
+    full_name: 陈耀洋
+    gitea_admin: false
+    host_admin: false
+  - username: zhaoyiran
+    full_name: 赵依然
+    gitea_admin: false
+    host_admin: false
+  - username: chenhuifeng
+    full_name: 陈辉峰
+    gitea_admin: false
+    host_admin: false
+  - username: lingcheng
+    full_name: 凌成
+    gitea_admin: false
+    host_admin: false
+  - username: zhaoqihang
+    full_name: 赵启行
+    gitea_admin: false
+    host_admin: false
+  - username: liuweixuan
+    full_name: 刘伟轩
+    gitea_admin: false
+    host_admin: false
+  - username: zhouxiangjiang
+    full_name: 周湘江
+    gitea_admin: false
+    host_admin: false
+  - username: liuli
+    full_name: 刘莉
+    gitea_admin: false
+    host_admin: false
+  - username: leizhenxin
+    full_name: 雷真欣
+    gitea_admin: false
+    host_admin: false
+  - username: xieborui
+    full_name: 谢博睿
+    gitea_admin: false
+    host_admin: false
+
