@@ -87,6 +87,7 @@ cp .env.example .env
 - `HOST_ADMIN_AUTHORIZED_KEYS_FILE`
 - 默认 `CADDY_HTTP_PORT=18080`，因为目标服务器现网已有服务占用 `80`
 - 如果你的环境里 `443` 也已占用，再手动改 `CADDY_HTTPS_PORT`
+- 默认 `CODE_SERVER_LOCALE=zh-cn`，并尝试自动安装 `ms-ceintl.vscode-language-pack-zh-hans`
 
 `HOST_ADMIN_AUTHORIZED_KEYS_FILE` 必须指向一个“公钥列表”文件，也就是未来允许登录 `zhoucanyu` 的 `authorized_keys` 内容来源。它不是自动复用当前登录用户家目录里的 `~/.ssh/authorized_keys`。
 
@@ -149,6 +150,9 @@ ls /srv/110devspace/caddy/data/caddy/pki/authorities/local/root.crt
 - 每个工作区第一次启动时，会在 `~/.config/code-server/config.yaml` 写入初始密码
 - 初始密码来自 `.env` 的 `CODE_SERVER_INITIAL_PASSWORD`
 - 该文件只在不存在时生成，不会覆盖用户后续自定义修改
+- 默认界面语言来自 `.env` 的 `CODE_SERVER_LOCALE=zh-cn`
+- 容器启动时会检测并尝试安装 `.env` 里的 `CODE_SERVER_LANGUAGE_PACK`
+- 如果服务器无法访问扩展源，语言包安装会跳过，IDE 仍可启动
 
 用户自行修改 code-server 密码的方式：
 

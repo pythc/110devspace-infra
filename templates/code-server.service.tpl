@@ -12,7 +12,10 @@
       - |-
         CONFIG_DIR="/home/coder/.config/code-server"
         CONFIG_FILE="$$CONFIG_DIR/config.yaml"
-        mkdir -p "$$CONFIG_DIR"
+        USER_DATA_DIR="/home/coder/.local/share/code-server"
+        EXTENSION_ID="${CODE_SERVER_LANGUAGE_PACK:-ms-ceintl.vscode-language-pack-zh-hans}"
+        LOCALE="${CODE_SERVER_LOCALE:-zh-cn}"
+        mkdir -p "$$CONFIG_DIR" "$$USER_DATA_DIR/User"
         if [ ! -f "$$CONFIG_FILE" ]; then
           cat > "$$CONFIG_FILE" <<EOF
         bind-addr: 0.0.0.0:8080
@@ -21,7 +24,17 @@
         cert: false
         EOF
         fi
-        exec code-server --config "$$CONFIG_FILE" /home/coder/workspace
+        if [ -n "$$LOCALE" ]; then
+          cat > "$$USER_DATA_DIR/User/locale.json" <<EOF
+        {
+          "locale": "$$LOCALE"
+        }
+        EOF
+        fi
+        if [ -n "$$EXTENSION_ID" ] && ! code-server --list-extensions | grep -qx "$$EXTENSION_ID"; then
+          code-server --install-extension "$$EXTENSION_ID" >/tmp/code-server-extension-install.log 2>&1 || true
+        fi
+        exec code-server --locale "$$LOCALE" --config "$$CONFIG_FILE" /home/coder/workspace
     security_opt:
       - no-new-privileges:true
     cap_drop:

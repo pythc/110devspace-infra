@@ -188,6 +188,8 @@ def render_env_example(inventory: dict) -> str:
             "GITEA_INITIAL_PASSWORD=ChangeMe!123",
             "CODE_SERVER_IMAGE=ghcr.io/coder/code-server:4.107.1-39",
             "CODE_SERVER_INITIAL_PASSWORD=ChangeMe!123",
+            "CODE_SERVER_LOCALE=zh-cn",
+            "CODE_SERVER_LANGUAGE_PACK=ms-ceintl.vscode-language-pack-zh-hans",
             "CADDY_IMAGE=caddy:2.10.2-alpine",
             "CADDY_HTTP_PORT=18080",
             "CADDY_HTTPS_PORT=443",
