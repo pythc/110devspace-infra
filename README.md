@@ -85,7 +85,8 @@ cp .env.example .env
 - `GITEA_INITIAL_PASSWORD`
 - `CODE_SERVER_INITIAL_PASSWORD`
 - `HOST_ADMIN_AUTHORIZED_KEYS_FILE`
-- 如果本机已有 `80/443` 占用，临时改 `CADDY_HTTP_PORT` / `CADDY_HTTPS_PORT` 做本地验证
+- 默认 `CADDY_HTTP_PORT=18080`，因为目标服务器现网已有服务占用 `80`
+- 如果你的环境里 `443` 也已占用，再手动改 `CADDY_HTTPS_PORT`
 
 `HOST_ADMIN_AUTHORIZED_KEYS_FILE` 必须指向一个“公钥列表”文件，也就是未来允许登录 `zhoucanyu` 的 `authorized_keys` 内容来源。它不是自动复用当前登录用户家目录里的 `~/.ssh/authorized_keys`。
 
