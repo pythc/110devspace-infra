@@ -5,12 +5,33 @@ import json
 import subprocess
 import sys
 import time
+from shutil import which
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parent.parent
 ENV_FILE = ROOT / ".env"
 BOOTSTRAP_FILE = ROOT / "generated" / "bootstrap-users.json"
+
+
+def compose_base_command() -> list[str]:
+    docker = which("docker")
+    if docker:
+        probe = subprocess.run(
+            [docker, "compose", "version"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        if probe.returncode == 0:
+            return [docker, "compose"]
+
+    legacy = which("docker-compose")
+    if legacy:
+        return [legacy]
+
+    raise SystemExit("Neither 'docker compose' nor 'docker-compose' is available.")
 
 
 def load_env(path: Path) -> dict[str, str]:
@@ -26,7 +47,7 @@ def load_env(path: Path) -> dict[str, str]:
 
 def compose_command(*args: str, capture_output: bool = False) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        ["docker", "compose", *args],
+        [*compose_base_command(), *args],
         cwd=ROOT,
         text=True,
         capture_output=capture_output,

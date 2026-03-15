@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="${ROOT_DIR}/.env"
 BOOTSTRAP_FILE="${ROOT_DIR}/generated/bootstrap-users.json"
+source "${ROOT_DIR}/scripts/compose_helper.sh"
 
 if [[ ! -f "${ENV_FILE}" ]]; then
   echo "Missing ${ENV_FILE}. Copy .env.example to .env first." >&2
@@ -18,6 +19,8 @@ fi
 set -a
 source "${ENV_FILE}"
 set +a
+
+require_compose
 
 if [[ -z "${GITEA_INITIAL_PASSWORD:-}" || -z "${CODE_SERVER_INITIAL_PASSWORD:-}" ]]; then
   echo "Both GITEA_INITIAL_PASSWORD and CODE_SERVER_INITIAL_PASSWORD must be set in .env." >&2
@@ -42,7 +45,7 @@ PY
 
 for username in "${ALL_USERS[@]}"; do
   echo "[gitea] resetting ${username}"
-  docker compose -f "${ROOT_DIR}/docker-compose.yml" exec -T gitea \
+  ${COMPOSE_CMD} -f "${ROOT_DIR}/docker-compose.yml" exec -T gitea \
     gitea admin user change-password \
     --username "${username}" \
     --password "${GITEA_INITIAL_PASSWORD}" \
@@ -59,7 +62,7 @@ EOF
   chown -R "${APP_UID}:${APP_GID}" "${config_dir}"
 
   echo "[code-server] restarting code-server-${username}"
-  docker compose -f "${ROOT_DIR}/docker-compose.yml" restart "code-server-${username}" >/dev/null
+  ${COMPOSE_CMD} -f "${ROOT_DIR}/docker-compose.yml" restart "code-server-${username}" >/dev/null
 done
 
 echo "All initial passwords have been reset."

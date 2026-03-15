@@ -35,7 +35,9 @@
 
 生产服务器默认按 `Ubuntu 22.04` 设计，需提前准备：
 
-1. Docker Engine + Compose v2
+1. Docker Engine + 任一 Compose 实现
+   - 优先：`docker compose`（Compose v2 插件）
+   - 兼容：`docker-compose`（Standalone / Legacy）
 2. Python 3 + `python3-yaml`
 3. 内网 DNS：
    - `git.110devspace.internal -> 10.16.6.247`
@@ -49,7 +51,7 @@ sudo apt update
 sudo apt install -y python3 python3-yaml
 ```
 
-如果 `docker --version` 正常，但 `docker compose version` 报 `unknown command`，说明宿主机缺少 Compose v2 插件。先把插件补上，再继续部署。
+如果 `docker --version` 正常，但 `docker compose version` 报 `unknown command`，并不代表不能部署。只要宿主机上有可用的 `docker-compose` 独立命令，这个仓库里的脚本也能正常工作。
 
 ## 首次渲染
 
@@ -118,6 +120,8 @@ docker compose up -d
 python3 scripts/bootstrap_gitea.py
 ```
 
+如果宿主机只有 `docker-compose`，把上面命令里的 `docker compose` 换成 `docker-compose` 即可。仓库内脚本会自动探测两种实现。
+
 如果你准备用 `docker` 组而不是 `sudo` 运行 Compose，先重新登录一次宿主机账号，让 `scripts/init_host.sh` 刚添加的组成员关系生效。
 
 ### 4. 导出 Caddy 根证书
@@ -167,6 +171,8 @@ python3 scripts/render_inventory.py
 docker compose up -d --remove-orphans
 ```
 
+如果宿主机只有 `docker-compose`，这里同样替换成 `docker-compose up -d --remove-orphans`。
+
 ### 新增或删除成员
 
 1. 修改 `inventory/users.yaml`
@@ -210,6 +216,8 @@ docker compose logs -f gitea
 docker compose logs -f caddy
 docker compose logs -f code-server-zhoucanyu
 ```
+
+如果宿主机只有 `docker-compose`，把上面命令整体替换为 `docker-compose ...`。
 
 ## 容量边界
 

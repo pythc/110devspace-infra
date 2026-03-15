@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="${ROOT_DIR}/.env"
+source "${ROOT_DIR}/scripts/compose_helper.sh"
 
 if [[ ! -f "${ENV_FILE}" ]]; then
   echo "Missing ${ENV_FILE}. Copy .env.example to .env first." >&2
@@ -13,6 +14,8 @@ set -a
 source "${ENV_FILE}"
 set +a
 
+require_compose
+
 DATA_ROOT="${DATA_ROOT:-/srv/110devspace}"
 BACKUP_ROOT="${BACKUP_ROOT:-${DATA_ROOT}/backups}"
 TIMESTAMP="$(date +%Y%m%d-%H%M%S)"
@@ -21,7 +24,7 @@ TARGET_DIR="${BACKUP_ROOT}/${TIMESTAMP}"
 install -d -m 0750 "${TARGET_DIR}"
 
 echo "[backup] dumping PostgreSQL"
-docker compose -f "${ROOT_DIR}/docker-compose.yml" exec -T postgres \
+${COMPOSE_CMD} -f "${ROOT_DIR}/docker-compose.yml" exec -T postgres \
   pg_dump -U "${POSTGRES_USER}" "${POSTGRES_DB}" > "${TARGET_DIR}/postgres.sql"
 
 echo "[backup] archiving gitea and code-server configuration"
@@ -33,7 +36,7 @@ find "${DATA_ROOT}/workspaces" -mindepth 1 -maxdepth 2 \
   -printf '%M|%u|%g|%s|%TY-%Tm-%Td %TH:%TM:%TS|%p\n' \
   > "${TARGET_DIR}/workspace-metadata.txt"
 
-if docker compose -f "${ROOT_DIR}/docker-compose.yml" exec -T caddy \
+if ${COMPOSE_CMD} -f "${ROOT_DIR}/docker-compose.yml" exec -T caddy \
   sh -lc 'cat /data/caddy/pki/authorities/local/root.crt' > "${TARGET_DIR}/caddy-root.crt" 2>/dev/null; then
   :
 else
