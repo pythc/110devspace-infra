@@ -12,13 +12,14 @@
 ## 固定约定
 
 - 基域名：`110devspace.internal`
-- Gitea：`https://git.110devspace.internal`
-- 工作区：`https://ide-<username>.110devspace.internal`
+- Gitea：`https://git.110devspace.internal:18443`
+- 工作区：`https://ide-<username>.110devspace.internal:18443`
 - Gitea SSH：`ssh://git@git.110devspace.internal:2222/<org>/<repo>.git`
 - 唯一宿主机管理员：`zhoucanyu`
 - 其余用户只有各自 `code-server` 容器，不创建宿主机 Linux 用户
 
 `2222` 是刻意保留给 Gitea 的 raw SSH 入口。只靠 `Caddy 80/443` 无法完成 Git over SSH。
+`110devspace` 默认不再占用宿主机 `443`，而是固定走 `18443`，把标准 `443` 留给 `ai-homework-system`。
 
 ## 仓库布局
 
@@ -85,18 +86,22 @@ cp .env.example .env
 - `GITEA_INITIAL_PASSWORD`
 - `CODE_SERVER_INITIAL_PASSWORD`
 - `HOST_ADMIN_AUTHORIZED_KEYS_FILE`
+- `GITEA_ROOT_URL`
 - 如果要从内网 Git 服务或自签名源导入仓库，再按需设置：
   - `GITEA_MIGRATIONS_ALLOWED_DOMAINS`
   - `GITEA_MIGRATIONS_BLOCKED_DOMAINS`
   - `GITEA_MIGRATIONS_ALLOW_LOCALNETWORKS`
   - `GITEA_MIGRATIONS_SKIP_TLS_VERIFY`
 - 默认 `CADDY_HTTP_PORT=18080`，因为目标服务器现网已有服务占用 `80`
-- 如果你的环境里 `443` 也已占用，再手动改 `CADDY_HTTPS_PORT`
+- 默认 `CADDY_HTTPS_PORT=18443`，刻意避开宿主机 `443`
+- 如果你继续改 `CADDY_HTTPS_PORT`，同步更新 `GITEA_ROOT_URL`
 - 默认 `CODE_SERVER_LOCALE=zh-cn`，并尝试自动安装 `ms-ceintl.vscode-language-pack-zh-hans`
 
 `HOST_ADMIN_AUTHORIZED_KEYS_FILE` 必须指向一个“公钥列表”文件，也就是未来允许登录 `zhoucanyu` 的 `authorized_keys` 内容来源。它不是自动复用当前登录用户家目录里的 `~/.ssh/authorized_keys`。
 
 `Gitea` 的仓库导入限制项对应官方 `[migrations]` 配置。默认 `GITEA_MIGRATIONS_ALLOW_LOCALNETWORKS=false`，因此从 `10.x`、`192.168.x`、`.internal` 这类内网源导入时，可能出现“您不能从不允许的主机导入”的报错。改完这些变量后，需要完整重启 `gitea` 容器才会生效。
+
+`GITEA_ROOT_URL` 必须和用户实际访问的外部 URL 一致。当前默认设计是 `https://git.110devspace.internal:18443/`。如果你把 `110devspace` 再改到别的 HTTPS 端口，或者未来重新拿回宿主机 `443`，这里也要一起改。
 
 如果你当前登录的服务器账号本地并没有这个文件，做法是：
 
@@ -184,6 +189,20 @@ docker compose up -d --remove-orphans
 ```
 
 如果宿主机只有 `docker-compose`，这里同样替换成 `docker-compose up -d --remove-orphans`。
+
+### 与 ai-homework-system 共存
+
+当前默认拓扑是：
+
+- `ai-homework-system`：占用宿主机 `443`
+- `110devspace`：占用宿主机 `18443`
+
+因此团队访问 `110devspace` 时，必须显式带端口：
+
+- `https://git.110devspace.internal:18443`
+- `https://ide-<username>.110devspace.internal:18443`
+
+DNS 仍然只需要把域名解析到同一台服务器，端口不由 DNS 控制。
 
 ### 新增或删除成员
 
