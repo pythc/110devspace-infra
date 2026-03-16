@@ -46,6 +46,10 @@ services:
       GITEA__service__REQUIRE_SIGNIN_VIEW: "true"
       GITEA__service__REGISTER_EMAIL_CONFIRM: "false"
       GITEA__service__ENABLE_NOTIFY_MAIL: "false"
+      GITEA__migrations__ALLOWED_DOMAINS: ${GITEA_MIGRATIONS_ALLOWED_DOMAINS:-}
+      GITEA__migrations__BLOCKED_DOMAINS: ${GITEA_MIGRATIONS_BLOCKED_DOMAINS:-}
+      GITEA__migrations__ALLOW_LOCALNETWORKS: "${GITEA_MIGRATIONS_ALLOW_LOCALNETWORKS:-false}"
+      GITEA__migrations__SKIP_TLS_VERIFY: "${GITEA_MIGRATIONS_SKIP_TLS_VERIFY:-false}"
       GITEA__picture__DISABLE_GRAVATAR: "true"
       GITEA__mailer__ENABLED: "false"
       GITEA__session__COOKIE_SECURE: "true"

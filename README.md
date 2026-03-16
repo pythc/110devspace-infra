@@ -85,11 +85,18 @@ cp .env.example .env
 - `GITEA_INITIAL_PASSWORD`
 - `CODE_SERVER_INITIAL_PASSWORD`
 - `HOST_ADMIN_AUTHORIZED_KEYS_FILE`
+- 如果要从内网 Git 服务或自签名源导入仓库，再按需设置：
+  - `GITEA_MIGRATIONS_ALLOWED_DOMAINS`
+  - `GITEA_MIGRATIONS_BLOCKED_DOMAINS`
+  - `GITEA_MIGRATIONS_ALLOW_LOCALNETWORKS`
+  - `GITEA_MIGRATIONS_SKIP_TLS_VERIFY`
 - 默认 `CADDY_HTTP_PORT=18080`，因为目标服务器现网已有服务占用 `80`
 - 如果你的环境里 `443` 也已占用，再手动改 `CADDY_HTTPS_PORT`
 - 默认 `CODE_SERVER_LOCALE=zh-cn`，并尝试自动安装 `ms-ceintl.vscode-language-pack-zh-hans`
 
 `HOST_ADMIN_AUTHORIZED_KEYS_FILE` 必须指向一个“公钥列表”文件，也就是未来允许登录 `zhoucanyu` 的 `authorized_keys` 内容来源。它不是自动复用当前登录用户家目录里的 `~/.ssh/authorized_keys`。
+
+`Gitea` 的仓库导入限制项对应官方 `[migrations]` 配置。默认 `GITEA_MIGRATIONS_ALLOW_LOCALNETWORKS=false`，因此从 `10.x`、`192.168.x`、`.internal` 这类内网源导入时，可能出现“您不能从不允许的主机导入”的报错。改完这些变量后，需要完整重启 `gitea` 容器才会生效。
 
 如果你当前登录的服务器账号本地并没有这个文件，做法是：
 
