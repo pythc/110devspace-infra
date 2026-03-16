@@ -36,10 +36,12 @@ APP_UID="${APP_UID:-1000}"
 APP_GID="${APP_GID:-1000}"
 POSTGRES_UID="${POSTGRES_UID:-999}"
 POSTGRES_GID="${POSTGRES_GID:-999}"
+HOST_ADMIN_HOME="/home/${HOST_ADMIN_USERNAME}"
+HOST_ADMIN_AUTHORIZED_KEYS_DEST="${HOST_ADMIN_HOME}/.ssh/authorized_keys"
+HAS_AUTHORIZED_KEYS_SOURCE="false"
 
-if [[ -z "${HOST_ADMIN_AUTHORIZED_KEYS_FILE}" || ! -f "${HOST_ADMIN_AUTHORIZED_KEYS_FILE}" ]]; then
-  echo "Set HOST_ADMIN_AUTHORIZED_KEYS_FILE in .env to a readable authorized_keys source file." >&2
-  exit 1
+if [[ -n "${HOST_ADMIN_AUTHORIZED_KEYS_FILE}" && -f "${HOST_ADMIN_AUTHORIZED_KEYS_FILE}" ]]; then
+  HAS_AUTHORIZED_KEYS_SOURCE="true"
 fi
 
 mapfile -t ALL_USERS < <(
@@ -75,7 +77,16 @@ done
 chown -R "${APP_UID}:${APP_GID}" "${DATA_ROOT}/code-server" "${DATA_ROOT}/workspaces"
 
 if ! id "${HOST_ADMIN_USERNAME}" >/dev/null 2>&1; then
+  if [[ "${HAS_AUTHORIZED_KEYS_SOURCE}" != "true" ]]; then
+    echo "Set HOST_ADMIN_AUTHORIZED_KEYS_FILE in .env to a readable authorized_keys source file before the first host init." >&2
+    exit 1
+  fi
   useradd --create-home --shell /bin/bash "${HOST_ADMIN_USERNAME}"
+fi
+
+if [[ "${HAS_AUTHORIZED_KEYS_SOURCE}" != "true" && ! -f "${HOST_ADMIN_AUTHORIZED_KEYS_DEST}" ]]; then
+  echo "Set HOST_ADMIN_AUTHORIZED_KEYS_FILE in .env to a readable authorized_keys source file, or keep ${HOST_ADMIN_AUTHORIZED_KEYS_DEST} on disk." >&2
+  exit 1
 fi
 
 usermod -aG sudo "${HOST_ADMIN_USERNAME}"
@@ -88,9 +99,11 @@ install -d -m 0750 /etc/sudoers.d
 printf '%s ALL=(ALL:ALL) NOPASSWD:ALL\n' "${HOST_ADMIN_USERNAME}" > "/etc/sudoers.d/90-${HOST_ADMIN_USERNAME}"
 chmod 0440 "/etc/sudoers.d/90-${HOST_ADMIN_USERNAME}"
 
-install -d -m 0700 "/home/${HOST_ADMIN_USERNAME}/.ssh"
-install -m 0600 "${HOST_ADMIN_AUTHORIZED_KEYS_FILE}" "/home/${HOST_ADMIN_USERNAME}/.ssh/authorized_keys"
-chown -R "${HOST_ADMIN_USERNAME}:${HOST_ADMIN_USERNAME}" "/home/${HOST_ADMIN_USERNAME}/.ssh"
+install -d -m 0700 "${HOST_ADMIN_HOME}/.ssh"
+if [[ "${HAS_AUTHORIZED_KEYS_SOURCE}" == "true" ]]; then
+  install -m 0600 "${HOST_ADMIN_AUTHORIZED_KEYS_FILE}" "${HOST_ADMIN_AUTHORIZED_KEYS_DEST}"
+fi
+chown -R "${HOST_ADMIN_USERNAME}:${HOST_ADMIN_USERNAME}" "${HOST_ADMIN_HOME}/.ssh"
 
 SSHD_CONFIG="/etc/ssh/sshd_config"
 
